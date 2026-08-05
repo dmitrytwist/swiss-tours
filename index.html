@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Жеребьевка</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { padding: 30px; background-color: #f4f6f9; }
+        .round-card { margin-bottom: 35px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .eliminated { text-decoration: line-through; color: #dc3545; opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid" style="max-width: 1400px;">
+        <h1 class="mb-4 text-center fw-bold text-dark">Турнир</h1>
+        
+        <!-- Настройки -->
+        <div class="card p-4 mb-4 border-0 shadow-sm">
+            <h5 class="mb-3 text-secondary">Параметры турнира</h5>
+            <form action="/" method="POST" class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="form-label">Количество участников</label>
+                    <input type="number" name="num_players" class="form-control" value="8" min="2" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Количество поражений</label>
+                    <input type="number" name="max_losses" class="form-control" value="3" min="1" required>
+                </div>
+                <div class="col-md-4 align-self-end">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Запустить турнир</button>
+                </div>
+            </form>
+        </div>
+
+        {% if tournament.rounds %}
+            <!-- Вывод туров в обратном порядке (новый сверху) -->
+            {% for round in tournament.rounds | reverse %}
+                <div class="card round-card">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+                        <h4 class="m-0 fw-bold">Тур {{ round.round_num }}</h4>
+                        {% if round.round_num == tournament.current_round and tournament.started %}
+                            <a href="/generate_results" class="btn btn-warning btn-sm fw-bold">Рассчитать матчи и создать следующий тур</a>
+                        {% elif round.round_num == tournament.current_round and not tournament.started %}
+                            <span class="badge bg-danger p-2 fs-6">Турнир завершен!</span>
+                        {% else %}
+                            <span class="badge bg-secondary p-2">Тур завершен</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body row p-4">
+                        <!-- Рассадка -->
+                        <div class="col-xl-6 border-end">
+                            <h5 class="text-primary mb-3 fw-bold">Сетка матчей тура</h5>
+                            <div class="list-group">
+                                {% for pair in round.pairings %}
+                                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                        <div>
+                                            <span class="fs-5 {% if tournament.players[pair.p1].eliminated %}eliminated{% endif %}">
+                                                {{ tournament.players[pair.p1].name }} ({{ tournament.players[pair.p1].wins }}W - {{ tournament.players[pair.p1].losses }}L)
+                                            </span>
+                                            <strong class="mx-3 text-muted">VS</strong>
+                                            <span class="fs-5 {% if tournament.players[pair.p2].eliminated %}eliminated{% endif %}">
+                                                {{ tournament.players[pair.p2].name }} ({{ tournament.players[pair.p2].wins }}W - {{ tournament.players[pair.p2].losses }}L)
+                                            </span>
+                                        </div>
+                                        {% if pair.result %}
+                                            <span class="badge bg-success p-2">Победитель: {{ tournament.players[pair.result.winner].name }}</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-dark border p-2">В ожидании</span>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Таблица на момент тура -->
+                        <div class="col-xl-6 mt-4 mt-xl-0">
+                            <h5 class="text-success mb-3 fw-bold">Таблица результатов (по итогам Тура {{ round.round_num }})</h5>
+                            <table class="table table-hover table-striped align-middle border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Место</th>
+                                        <th>Игрок</th>
+                                        <th>Победы</th>
+                                        <th>Поражения</th>
+                                        <th>Бухгольц</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in round.standings %}
+                                        <tr class="{% if p.eliminated %}table-danger{% endif %}">
+                                            <td><strong>{{ loop.index }}</strong></td>
+                                            <td><span class="{% if p.eliminated %}text-decoration-line-through text-muted{% else %}fw-bold{% endif %}">{{ p.name }}</span></td>
+                                            <td><span class="badge bg-success fs-6">{{ p.wins }}</span></td>
+                                            <td><span class="badge bg-danger fs-6">{{ p.losses }}</span></td>
+                                            <td><span class="badge bg-info text-dark fs-6">{{ p.buchholz }}</span></td>
+                                            <td>
+                                                {% if p.eliminated %}
+                                                    <span class="badge bg-danger">Выбыл</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">В игре</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html>
