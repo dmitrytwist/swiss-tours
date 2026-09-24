@@ -1,14 +1,14 @@
-Швейцарка без BYE			- Swiss with Dropdowns / Hybrid Swiss-Elimination with Fillers
-Швейцарка Классик			- Triple Elimination
-Швейцарка Без выбывания		- Swiss Without Elimination
-Швейцарка + Плей Офф		- Swiss to Single Elimination / Top Cut
-
-Олимпийка					- Single Elimination
-Олимпийка с нижней сеткой	- Double Elimination
-Швейцарка + Олимпийка		- Swiss Qualifier / Swiss Group Stage
-
-Круговая					- Round Robin
-
+Швейцарка без BYE			- Swiss with Dropdowns / Hybrid Swiss-Elimination with Fillers  
+Швейцарка Классик			- Triple Elimination  
+Швейцарка Без выбывания		- Swiss Without Elimination  
+Швейцарка + Плей Офф		- Swiss to Single Elimination / Top Cut  
+  
+Олимпийка					- Single Elimination  
+Олимпийка с нижней сеткой	- Double Elimination  
+Швейцарка + Олимпийка		- Swiss Qualifier / Swiss Group Stage  
+  
+Круговая					- Round Robin  
+  
 
 -- 1. Таблица игроков (глобальный список)
 CREATE TABLE players (
